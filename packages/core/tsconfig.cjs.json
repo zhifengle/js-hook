@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2020",
+    "outDir": "./dist/cjs"
+  },
+  "exclude": [
+    "src/browser/*",
+    "src/**/*.test.ts"
+  ]
+}

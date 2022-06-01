@@ -1,14 +1,31 @@
-import { inject, getCachedFile, hasValidCache, cacheFile } from 'js-hook';
+import {
+  inject,
+  getCachedFile,
+  hasValidCache,
+  cacheFile,
+  removeFile,
+} from '@js-hook/core';
+import fs from 'fs';
 
-function getJsHookStr(url: string, body: Buffer) {
+function getJsHookStr(url: string, body: Buffer, ruleValue: string) {
   let resStr = body.toString();
   let hookStr = '';
-  if (hasValidCache(url)) {
+  if (hasValidCache(url) && ruleValue !== 'hook-no-cache') {
     console.log('url: has cache', url);
     hookStr = getCachedFile(url).toString();
   } else {
     try {
       hookStr = inject(resStr);
+      if (ruleValue === 'hook-no-cache') {
+        removeFile(url);
+        return hookStr;
+      }
+      if (ruleValue === 'hook-js') {
+        hookStr =
+          fs
+            .readFileSync(require.resolve('@js-hook/core/dist/browser'))
+            .toString() + hookStr;
+      }
       cacheFile(url, hookStr);
     } catch (error) {}
   }
@@ -22,8 +39,7 @@ function handleReq(
   // do something
   const { ruleValue } = req.originalReq;
   const urlObj = new URL(req.fullUrl);
-  console.log(req.originalReq.headers);
-  if (ruleValue === 'hook' && urlObj.pathname.endsWith('js')) {
+  if (ruleValue.startsWith('hook') && urlObj.pathname.endsWith('js')) {
     // 简单处理，不支持各种编码，省得对响应内容进行解码
     delete req.headers['accept-encoding'];
     const client = req.request((svrRes: any) => {
@@ -37,9 +53,9 @@ function handleReq(
       });
       svrRes.on('end', async () => {
         if (body) {
-          console.log('----------- 处理响应 ---------------');
+          console.log('----------- 转换js响应 ---------------');
           console.log(req.fullUrl);
-          const hookStr = getJsHookStr(req.fullUrl, body);
+          let hookStr = getJsHookStr(req.fullUrl, body, ruleValue);
           // await new Promise((r) => setTimeout(r, 5000));
           // console.log('----------- 响应完成 ---------------');
           res.end(hookStr);

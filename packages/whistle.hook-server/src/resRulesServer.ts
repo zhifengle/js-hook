@@ -14,11 +14,16 @@ export default (
   server.on(
     'request',
     (req: Whistle.PluginRequest, res: Whistle.PluginResponse) => {
-      res.end(
-        `/.*/ jsPrepend://${require.resolve(
-          'js-hook/dist/browser'
-        )} includeFilter://resH:Content-Type=text/html`
-      );
+      const { ruleValue } = req.originalReq;
+      if (ruleValue !== 'hook-js') {
+        res.end(
+          `/.*/ jsPrepend://${require.resolve(
+            '@js-hook/core/dist/browser'
+          )} includeFilter://resH:Content-Type=text/html`
+        );
+      } else {
+        res.end();
+      }
     }
   );
 };
