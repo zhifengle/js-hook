@@ -1,0 +1,28 @@
+{
+  "name": "@js-hook/server",
+  "version": "0.0.0",
+  "private": "true",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./dist/index.js",
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "22earth",
+  "license": "MIT",
+  "dependencies": {
+    "@js-hook/core": "workspace:*",
+    "@koa/router": "^10.1.1",
+    "@types/koa": "^2.13.4",
+    "@types/koa__router": "^8.0.11",
+    "koa": "^2.13.4",
+    "koa-body": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.38",
+    "ts-node": "^10.8.0",
+    "typescript": "^4.7.2"
+  }
+}

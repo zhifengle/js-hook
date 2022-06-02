@@ -1,6 +1,7 @@
 {
-  "name": "demos",
+  "name": "@js-hook/demos",
   "version": "0.1.0",
+  "private": "true",
   "description": "demos for test",
   "scripts": {
     "dev": "concurrently --kill-others \"serve\" \"serve -l 3030\""

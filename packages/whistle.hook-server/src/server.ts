@@ -6,8 +6,14 @@ import {
   removeFile,
 } from '@js-hook/core';
 import fs from 'fs';
+import { JSDOM } from 'jsdom';
 
-function getJsHookStr(url: string, body: Buffer, ruleValue: string) {
+function getDocObj(htmlStr: string): Document {
+  const dom = new JSDOM(htmlStr);
+  return dom.window.document;
+}
+
+function getJsHookStr(url: string, body: Buffer, ruleValue: string): string {
   let resStr = body.toString();
   let hookStr = '';
   if (hasValidCache(url) && ruleValue !== 'hook-no-cache') {
@@ -30,6 +36,22 @@ function getJsHookStr(url: string, body: Buffer, ruleValue: string) {
     } catch (error) {}
   }
   return hookStr;
+}
+
+function genHTMLResponse(htmlStr: string): string {
+  const doc = getDocObj(htmlStr);
+  doc.querySelectorAll('script').forEach((script) => {
+    if (script.src || !script.innerHTML) {
+      return;
+    }
+    // 移除 CSP 校验
+    script.removeAttribute('integrity');
+    script.removeAttribute('nonce');
+    try {
+      script.innerHTML = inject(script.innerHTML);
+    } catch (error) {}
+  });
+  return doc.documentElement.outerHTML;
 }
 
 function handleReq(

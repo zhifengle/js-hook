@@ -10,7 +10,7 @@
     "build:core": "pnpm core build",
     "hook-server": "pnpm --filter=whistle.hook-server",
     "core": "pnpm --filter=@js-hook/core",
-    "demos": "pnpm --filter demos run dev",
+    "demos": "pnpm --filter @js-hook/demos run dev",
     "test": "jest --all"
   },
   "keywords": [],
