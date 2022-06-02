@@ -1,0 +1,15 @@
+{
+  "name": "demos",
+  "version": "0.1.0",
+  "description": "demos for test",
+  "scripts": {
+    "dev": "concurrently --kill-others \"serve\" \"serve -l 3030\""
+  },
+  "keywords": [],
+  "author": "22earth",
+  "license": "MIT",
+  "dependencies": {
+    "concurrently": "^7.2.1",
+    "serve": "^13.0.2"
+  }
+}
