@@ -6,12 +6,12 @@
   "module": "./dist/esm/index.js",
   "types": "./dist/types",
   "scripts": {
-    "build": "shx rm -rf dist && npm run build:esm && npm run build:types && npm run build:browser && npm run build:cjs",
+    "build": "shx rm -rf dist && npm run build:types && npm run build:browser && npm run build:cjs",
     "build:cjs": "tsc -b ./tsconfig.cjs.json",
     "build:declaration": "tsc src/index.ts src/hook.d.ts --declaration --skipLibCheck --allowSyntheticDefaultImports --allowJs --out dist/index.d.ts",
     "build:esm": "tsc -b ./tsconfig.esm.json",
     "build:types": "tsc -b ./tsconfig.types.json && shx cp src/*.d.ts dist/types",
-    "build:browser": "rollup dist/esm/browser/index.js --format iife --file dist/browser.js",
+    "build:browser": "npm run build:esm && rollup dist/esm/browser/index.js --format iife --file dist/browser.js",
     "build:node": "rollup dist/esm/index.js --format cjs --file dist/index.js",
     "test": "jest --all"
   },

@@ -1,6 +1,6 @@
 import { e_user_hook } from './hook';
 import { recordString } from './record-string';
-import { searchByValue } from './search-string';
+import { searchByMsg, searchNameByMsg } from './search-string';
 
 // 使用 rollup 打包成 iife. 集中初始化一些全局变量
 function init() {
@@ -13,8 +13,14 @@ function init() {
   window.e_user_hook_fn_list.push(recordString);
 
   window.e_user_hook = e_user_hook;
-  window.e_user_search = searchByValue;
-
+  window.search = window._search = window.e_user_search = searchByMsg;
+  if (!window.search) {
+    window.search = window.e_user_search;
+  }
+  if (!window._search) {
+    window._search = window.e_user_search;
+  }
+  window.e_user_search_name = searchNameByMsg;
   window.e_user_hook_done = true;
 }
 init();

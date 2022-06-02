@@ -17,6 +17,9 @@ interface Window {
   e_user_hook: HookFn;
   e_user_hook_done: boolean;
   e_user_search: (pattern: string | RegExp) => void;
+  e_user_search_name: (pattern: string | RegExp) => void;
+  search?: (pattern: string | RegExp) => void;
+  _search?: (pattern: string | RegExp) => void;
   e_user_string_db: StringDB[];
   e_user_execute_times: Record<string, number>;
   e_user_hook_fn_list: HookFn[];

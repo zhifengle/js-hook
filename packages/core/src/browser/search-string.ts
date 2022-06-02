@@ -5,6 +5,55 @@ type CodeInfo = {
   codeName: string;
 };
 
+const MESSAGE_TYPE = 'application/x-hook-search-v1+json';
+const messageSet = new Set();
+
+type IMessageData = {
+  type: typeof MESSAGE_TYPE;
+  uid: number;
+  pattern: SearchPattern;
+  fieldName: keyof StringDB;
+  // fieldName: string;
+};
+
+function isValidMessageEvent(event: MessageEvent<IMessageData>) {
+  // if (event.origin !== origin) {
+  //   return false;
+  // }
+  if (!event.data) {
+    return false;
+  }
+  if (event.data.type !== MESSAGE_TYPE || typeof event.data.uid !== 'number') {
+    return false;
+  }
+  if (event.data.uid && messageSet.has(event.data.uid)) {
+    return false;
+  }
+  return true;
+}
+
+window.addEventListener('message', (e: MessageEvent<IMessageData>) => {
+  const data = e.data;
+  if (!isValidMessageEvent(e)) {
+    return;
+  }
+  const results = search(data.fieldName, data.pattern);
+  printResult(results);
+  messageSet.add(data.uid);
+  crossIframeSearch(data);
+});
+
+function crossIframeSearch(msg: IMessageData) {
+  document.querySelectorAll('iframe').forEach((iframe) => {
+    iframe.contentWindow.postMessage(msg, '*');
+  });
+
+  // 父页面
+  if (window.self !== window.top) {
+    window.parent.postMessage(msg, '*');
+  }
+}
+
 // Firefox add@http://localhost:3000/libs/t.js:2:14
 // Chrome 的结果 "    at add (http://localhost:3000/libs/t2.js:158:3)"
 function parseCodeLocation(codeLocation: string): CodeInfo {
@@ -77,8 +126,8 @@ function printResult(results: StringDB[]) {
   console.table(displayResults, colunms);
   displayResults.forEach((item, idx) => {
     console.log(
-      `%c${idx}.%c ${item['变量名']}${blank(5)}${item['代码位置']}`,
-      'background: #222; color: #bada55',
+      `%c${idx}.%c ${item['变量名']}${blank(2)}代码位置:  ${item['代码位置']}`,
+      'background: yellow; color: tomato',
       ''
     );
   });
@@ -88,7 +137,19 @@ function blank(n: number) {
   return new Array(n).fill(' ').join('');
 }
 
-export function searchByValue(pattern: SearchPattern) {
-  const targets = search('value', pattern);
-  printResult(targets);
+export function searchNameByMsg(pattern: SearchPattern) {
+  searchByMsg(pattern, 'name');
+}
+
+export function searchByMsg(
+  pattern: SearchPattern,
+  fieldName: keyof StringDB = 'value'
+) {
+  const data: IMessageData = {
+    uid: +new Date(),
+    type: MESSAGE_TYPE,
+    fieldName,
+    pattern,
+  };
+  window.postMessage(data, '*');
 }
