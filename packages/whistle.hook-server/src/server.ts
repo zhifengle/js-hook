@@ -13,24 +13,31 @@ function getDocObj(htmlStr: string): Document {
   return dom.window.document;
 }
 
+function prependBrowserScript(str: string, ruleValue: string) {
+  let hookStr = str;
+  if (ruleValue.startsWith('hook-js')) {
+    hookStr =
+      fs
+        .readFileSync(require.resolve('@js-hook/core/dist/browser'))
+        .toString() + hookStr;
+  }
+  return hookStr;
+}
+
 function getJsHookStr(url: string, body: Buffer, ruleValue: string): string {
   let resStr = body.toString();
   let hookStr = '';
-  if (hasValidCache(url) && ruleValue !== 'hook-no-cache') {
+  const noCache = ruleValue.includes('no-cache');
+  if (hasValidCache(url) && !noCache) {
     console.log('url: has cache', url);
     hookStr = getCachedFile(url).toString();
   } else {
     try {
       hookStr = inject(resStr);
-      if (ruleValue === 'hook-no-cache') {
+      hookStr = prependBrowserScript(hookStr, ruleValue);
+      if (noCache) {
         removeFile(url);
         return hookStr;
-      }
-      if (ruleValue === 'hook-js') {
-        hookStr =
-          fs
-            .readFileSync(require.resolve('@js-hook/core/dist/browser'))
-            .toString() + hookStr;
       }
       cacheFile(url, hookStr);
     } catch (error) {}
@@ -38,7 +45,7 @@ function getJsHookStr(url: string, body: Buffer, ruleValue: string): string {
   return hookStr;
 }
 
-function genHTMLResponse(htmlStr: string): string {
+function genHTMLResponse(htmlStr: string, ruleValue: string): string {
   const doc = getDocObj(htmlStr);
   doc.querySelectorAll('script').forEach((script) => {
     if (script.src || !script.innerHTML) {
@@ -48,7 +55,9 @@ function genHTMLResponse(htmlStr: string): string {
     script.removeAttribute('integrity');
     script.removeAttribute('nonce');
     try {
-      script.innerHTML = inject(script.innerHTML);
+      let hookStr = inject(script.innerHTML);
+      hookStr = prependBrowserScript(hookStr, ruleValue);
+      script.innerHTML = hookStr;
     } catch (error) {}
   });
   return doc.documentElement.outerHTML;
@@ -61,9 +70,11 @@ function handleReq(
   // do something
   const { ruleValue } = req.originalReq;
   const urlObj = new URL(req.fullUrl);
-  if (ruleValue.startsWith('hook') && urlObj.pathname.endsWith('js')) {
+
+  if (ruleValue.startsWith('hook')) {
     // 简单处理，不支持各种编码，省得对响应内容进行解码
     delete req.headers['accept-encoding'];
+    // svrRes 是 IncomingMessage ??
     const client = req.request((svrRes: any) => {
       // 由于内容长度可能有变，删除长度自动改成 chunked
       delete svrRes.headers['content-length'];
@@ -74,13 +85,30 @@ function handleReq(
         body = body ? Buffer.concat([body, data]) : data;
       });
       svrRes.on('end', async () => {
+        if (svrRes.statusCode === 404) {
+          res.end(body);
+          return;
+        }
         if (body) {
-          console.log('----------- 转换js响应 ---------------');
-          console.log(req.fullUrl);
-          let hookStr = getJsHookStr(req.fullUrl, body, ruleValue);
-          // await new Promise((r) => setTimeout(r, 5000));
-          // console.log('----------- 响应完成 ---------------');
-          res.end(hookStr);
+          const typeHeader = svrRes.headers['content-type'];
+          if (
+            urlObj.pathname.endsWith('js') ||
+            typeHeader.includes('javascript')
+          ) {
+            console.log('----------- 转换js响应 ---------------');
+            console.log(req.fullUrl);
+            let hookStr = getJsHookStr(req.fullUrl, body, ruleValue);
+            // await new Promise((r) => setTimeout(r, 5000));
+            // console.log('----------- 响应完成 ---------------');
+            res.end(hookStr);
+          } else if (typeHeader.includes('text/html')) {
+            console.log('----------- 转换HTML响应 ---------------');
+            console.log(req.fullUrl);
+            let hookStr = genHTMLResponse(body.toString(), ruleValue);
+            res.end(hookStr);
+          } else {
+            res.end(body);
+          }
         } else {
           res.end();
         }

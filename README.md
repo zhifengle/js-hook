@@ -16,12 +16,12 @@
 
 TODO
 
-- 处理 HTML 文件里面的 script
 - [ ] 针对 `eval expressions` 的处理。
   - 这里指的是 eval Function, setTimeout, setInterval
   - 参考链接: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src#unsafe_eval_expressions
 - [ ] 优化速度，使用 Rust 版本的 babel: `swc`。直接使用 `@swc/core` 或者用 Rust 实现
   - 可能会鸽。
+- [ ] 保存 hook 数据的历史记录，对比前后两次的调用。
 
 ## 使用
 

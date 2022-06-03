@@ -32,16 +32,18 @@ function isValidMessageEvent(event: MessageEvent<IMessageData>) {
   return true;
 }
 
-window.addEventListener('message', (e: MessageEvent<IMessageData>) => {
-  const data = e.data;
-  if (!isValidMessageEvent(e)) {
-    return;
-  }
-  const results = search(data.fieldName, data.pattern);
-  printResult(results);
-  messageSet.add(data.uid);
-  crossIframeSearch(data);
-});
+export function initEvent() {
+  window.addEventListener('message', (e: MessageEvent<IMessageData>) => {
+    const data = e.data;
+    if (!isValidMessageEvent(e)) {
+      return;
+    }
+    const results = search(data.fieldName, data.pattern);
+    printResult(results);
+    messageSet.add(data.uid);
+    crossIframeSearch(data);
+  });
+}
 
 function crossIframeSearch(msg: IMessageData) {
   document.querySelectorAll('iframe').forEach((iframe) => {

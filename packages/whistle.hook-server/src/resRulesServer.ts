@@ -15,7 +15,7 @@ export default (
     'request',
     (req: Whistle.PluginRequest, res: Whistle.PluginResponse) => {
       const { ruleValue } = req.originalReq;
-      if (ruleValue !== 'hook-js') {
+      if (!ruleValue.startsWith('hook-js')) {
         res.end(
           `/.*/ jsPrepend://${require.resolve(
             '@js-hook/core/dist/browser'

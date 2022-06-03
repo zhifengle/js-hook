@@ -4,30 +4,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width" />
-  <title>Hook test</title>
+  <title>Hook test2</title>
 </head>
 
 <body>
-  <p>hook</p>
+  <p>hook test2</p>
   <script>
+    /*
     var sss = `
     var first = 'first';
     var second = 'second';
     console.log(first + second)
     `;
     setTimeout(`(function() {${sss}})()`, 0)
-    eval('var testEval = "testEval"')
     var newAdd = Function('a', 'b', 'return a+b;');
     newAdd('hooo', 'yooo');
+    */
+    eval('var testEval = "testEval"')
   </script>
-  <script>
-    var iframe = document.createElement('iframe');
-    iframe.setAttribute('frameborder', 0);
-    iframe.src = `//${location.hostname}:3030/hook-test-child`
-    document.body.appendChild(iframe);
-  </script>
-  <script src="./libs/t.js"></script>
-  <script src="./libs/jquery.min.js"></script>
 </body>
 
 </html>
