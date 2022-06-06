@@ -9,7 +9,7 @@ export function e_user_hook(name: string, value: any, type: HookCallType) {
 }
 
 function _hook(name: string, value: any, type: HookCallType) {
-  for (let callback of window.e_user_hook_fn_list) {
+  for (let callback of globalThis.e_user_hook_fn_list) {
     try {
       callback(name, value, type);
     } catch (e) {

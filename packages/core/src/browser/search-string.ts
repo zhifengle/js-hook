@@ -33,7 +33,7 @@ function isValidMessageEvent(event: MessageEvent<IMessageData>) {
 }
 
 export function initEvent() {
-  window.addEventListener('message', (e: MessageEvent<IMessageData>) => {
+  globalThis.addEventListener('message', (e: MessageEvent<IMessageData>) => {
     const data = e.data;
     if (!isValidMessageEvent(e)) {
       return;
@@ -41,18 +41,25 @@ export function initEvent() {
     const results = search(data.fieldName, data.pattern);
     printResult(results);
     messageSet.add(data.uid);
-    crossIframeSearch(data);
+    crossThreadSearch(data);
   });
 }
 
-function crossIframeSearch(msg: IMessageData) {
-  document.querySelectorAll('iframe').forEach((iframe) => {
-    iframe.contentWindow.postMessage(msg, '*');
+function crossThreadSearch(msg: IMessageData) {
+  globalThis.e_user_hook_worker_list.forEach((w) => {
+    w.postMessage(msg);
   });
+  // Worker 里面没有 document
+  if (globalThis.document) {
+    document.querySelectorAll('iframe').forEach((iframe) => {
+      iframe.contentWindow.postMessage(msg, '*');
+    });
 
-  // 父页面
-  if (window.self !== window.top) {
-    window.parent.postMessage(msg, '*');
+    // 父页面
+    if (window.self !== window.top) {
+      window.parent.postMessage(msg, '*');
+    }
+    return;
   }
 }
 
@@ -85,14 +92,14 @@ function isTargetValue(value: string, pattern: string | RegExp) {
 }
 
 function search(fieldName: keyof StringDB, pattern: SearchPattern) {
-  const varValueDb = window.e_user_string_db;
+  const varValueDb = globalThis.e_user_string_db;
   return varValueDb.filter((item) => {
     return isTargetValue(String(item[fieldName]), pattern);
   });
 }
 
 function printResult(results: StringDB[]) {
-  let message = '\n在线程栈： \n' + window.location.href + '\n';
+  let message = '\n在线程栈： \n' + globalThis.location.href + '\n';
   if (!results.length) {
     message += '中没有搜索到结果。\n\n';
     console.log(message);
@@ -111,7 +118,7 @@ function printResult(results: StringDB[]) {
     '执行顺序',
     // '代码位置',
   ];
-  const executeTimes = window.e_user_execute_times;
+  const executeTimes = globalThis.e_user_execute_times;
   const displayResults = results.map((item) => {
     const codeInfo = parseCodeLocation(item.codeLocation);
     return {
@@ -153,5 +160,9 @@ export function searchByMsg(
     fieldName,
     pattern,
   };
-  window.postMessage(data, '*');
+  if (globalThis.document) {
+    globalThis.postMessage(data, '*');
+  } else {
+    globalThis.postMessage(data);
+  }
 }

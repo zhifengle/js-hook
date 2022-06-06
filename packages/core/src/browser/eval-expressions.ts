@@ -1,35 +1,11 @@
 import { HOOK_FUCTION_NAME } from '../constants';
 
-function hookEval2() {
-  // 是否要在在控制台上打印eval hook日志提醒
-  const enableEvalHookLog = true;
-
-  // 用eval执行的代码也要能够注入，我擦开个接口吧...
-  const evalHolder = window.eval;
-  window.eval = function (jsCode) {
-    if (enableEvalHookLog) {
-      const isNeedNewLine = jsCode && jsCode.length > 100;
-      console.log(
-        'AST HOOK工具检测到eval执行代码： ' +
-          (isNeedNewLine ? '\n' : '') +
-          jsCode
-      );
-    }
-
-    arguments[0] = fetchHookStr(jsCode);
-    return evalHolder.apply(this, arguments);
-  };
-
-  window.eval.toString = function () {
-    return 'function eval() { [native code] }';
-  };
-}
-
 export function init() {
   hookEval();
   hookFunction();
   hookTimer('setTimeout');
   hookTimer('setInterval');
+  hookWorker();
 }
 
 function fetchHookStr(str: string): string {
@@ -43,8 +19,20 @@ function fetchHookStr(str: string): string {
   }
 }
 
+function fetchWorkerStr(url: string): string {
+  var request = new XMLHttpRequest();
+  request.open('GET', url, false);
+  request.send(null);
+  if (request.status === 200) {
+    return request.responseText;
+  } else {
+    console.error('获取出错');
+    return '';
+  }
+}
+
 function setDescriptor(fakeObj: any, prop: any) {
-  Object.defineProperty(window, prop, {
+  Object.defineProperty(globalThis, prop, {
     get: function () {
       return fakeObj;
     },
@@ -55,7 +43,7 @@ function setDescriptor(fakeObj: any, prop: any) {
 }
 
 function hookEval() {
-  var fakeObj = new Proxy(window.eval, {
+  var fakeObj = new Proxy(globalThis.eval, {
     get: function (target, p) {
       return Reflect.get(target, p);
     },
@@ -68,8 +56,8 @@ function hookEval() {
   setDescriptor(fakeObj, 'eval');
 }
 
-function hookTimer(prop: keyof WindowProxy) {
-  var fakeObj = new Proxy(window[prop], {
+function hookTimer(prop: 'setTimeout' | 'setInterval') {
+  var fakeObj = new Proxy(globalThis[prop], {
     get: function (target, p) {
       return Reflect.get(target, p);
     },
@@ -88,9 +76,29 @@ function hookTimer(prop: keyof WindowProxy) {
 function hookFunction() {
   const prop = 'Function';
 
-  var fakeObj = new Proxy(window[prop], {
+  var fakeObj = new Proxy(globalThis[prop], {
     get: function (target, p) {
       return Reflect.get(target, p);
+    },
+    construct(target, args) {
+      args = [...args];
+      const len = args.length;
+      if (len === 0) {
+        return new target(...args);
+      }
+      let body = args[len - 1];
+      body = fetchHookStr(body);
+      if (len > 1) {
+        body =
+          args
+            .slice(0, len - 1)
+            .map((arg) => {
+              return `${HOOK_FUCTION_NAME}("${arg}",${arg},"function-parameter");`;
+            })
+            .join('') + body;
+      }
+      args[len - 1] = body;
+      return new target(...args);
     },
     apply: function (trapTarget, thisArg, argumentList) {
       const len = argumentList.length;
@@ -114,4 +122,33 @@ function hookFunction() {
     },
   });
   setDescriptor(fakeObj, prop);
+}
+
+function hookWorker() {
+  var fakeObj = new Proxy(globalThis.Worker, {
+    get: function (target, p) {
+      return Reflect.get(target, p);
+    },
+    construct(target, args) {
+      console.log('worker constructor called');
+      args = [...args];
+      // @TODO Worker options 情况没有兼顾
+      var response = fetchWorkerStr(args[0]);
+      // @TODO 硬编码判断是否注入
+      if (!response.includes('globalThis.e_user_hook_done')) {
+        response = `(${globalThis.e_user_hook_iife})();` + response;
+      }
+      var blob = new Blob([response], { type: 'application/javascript' });
+      args[0] = URL.createObjectURL(blob);
+      var worker = Reflect.construct(target, args);
+      globalThis.e_user_hook_worker_list.push(worker);
+      return worker;
+    },
+    apply: function (trapTarget, thisArg, argumentList) {
+      const args = [...argumentList];
+      args[0] = fetchHookStr(args[0]);
+      return Reflect.apply(trapTarget, thisArg, args);
+    },
+  });
+  setDescriptor(fakeObj, 'Worker');
 }

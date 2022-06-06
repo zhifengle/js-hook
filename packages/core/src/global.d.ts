@@ -13,14 +13,16 @@ type StringDB = {
   execOrder: number;
   codeLocation: string;
 };
-interface Window {
-  e_user_hook: HookFn;
-  e_user_hook_done: boolean;
-  e_user_search: (pattern: string | RegExp) => void;
-  e_user_search_name: (pattern: string | RegExp) => void;
-  search?: (pattern: string | RegExp) => void;
-  _search?: (pattern: string | RegExp) => void;
-  e_user_string_db: StringDB[];
-  e_user_execute_times: Record<string, number>;
-  e_user_hook_fn_list: HookFn[];
+declare module globalThis {
+  var e_user_hook_iife: string;
+  var e_user_hook: HookFn;
+  var e_user_hook_done: boolean;
+  var e_user_search: (pattern: string | RegExp) => void;
+  var e_user_search_name: (pattern: string | RegExp) => void;
+  var search: (pattern: string | RegExp) => void;
+  var _search: (pattern: string | RegExp) => void;
+  var e_user_string_db: StringDB[];
+  var e_user_execute_times: Record<string, number>;
+  var e_user_hook_fn_list: HookFn[];
+  var e_user_hook_worker_list: Worker[];
 }

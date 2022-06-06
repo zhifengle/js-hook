@@ -19,8 +19,8 @@ function getCodeLocation(): string {
 }
 
 export function recordString(name: string, value: any, type: HookCallType) {
-  const varValueDb = window.e_user_string_db;
-  const executeTimes = window.e_user_execute_times;
+  const varValueDb = globalThis.e_user_string_db;
+  const executeTimes = globalThis.e_user_execute_times;
   // 现在只记录字符串
   if (!value || typeof value !== 'string') {
     return;
