@@ -12,11 +12,12 @@
   1. anyproxy 好像没人维护了
   2. whistle 的规则功能比较灵活，可以按需配置要处理的 JS 的文件。比如不需要处理 jquery 文件，就设置规则排除。规则参考看下文。
 - 调整的资源的缓存方式，资源缓存在用户目录下面的 `.cache/js-hook-cache`。按照域名和资源路径保存。
+- 支持 Web Worker
 - 尝试使用 pnpm 管理工作空间，初衷是想抄一下 `vuejs/core` 的设置，发现比较麻烦，最终还是自己设置。有待改进。
 
 TODO
 
-- [ ] 针对 `eval expressions` 的处理。
+- [x] 针对 `eval expressions` 的处理。
   - 这里指的是 eval Function, setTimeout, setInterval
   - 参考链接: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src#unsafe_eval_expressions
 - [ ] 优化速度，使用 Rust 版本的 babel: `swc`。直接使用 `@swc/core` 或者用 Rust 实现
