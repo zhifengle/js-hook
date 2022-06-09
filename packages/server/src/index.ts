@@ -2,6 +2,9 @@ import Koa from 'koa';
 import Router from '@koa/router';
 import koaBody from 'koa-body';
 import { inject } from '@js-hook/core';
+import dotenv from 'dotenv';
+import path from 'path';
+import fs from 'fs';
 
 const app = new Koa();
 const router = new Router();
@@ -25,4 +28,12 @@ router.post('/hook-js-code', koaBody(), async (ctx, next) => {
 
 app.use(router.routes()).use(router.allowedMethods());
 
-app.listen(10010);
+const configPath = path.resolve(__dirname, '../../../.env');
+if (fs.existsSync(configPath)) {
+  dotenv.config({
+    path: configPath,
+  });
+} else {
+  console.warn('配置文件不存在: ', configPath);
+}
+app.listen(process.env.SERVER_PORT || 10010);

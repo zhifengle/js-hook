@@ -6,7 +6,7 @@
   "module": "./dist/esm/index.js",
   "types": "./dist/types",
   "scripts": {
-    "build": "shx rm -rf dist && npm run build:types && npm run build:browser && npm run build:cjs",
+    "build": "shx rm -rf dist && npm run build:types && npm run build:esm && npm run build:cjs",
     "build:cjs": "tsc -b ./tsconfig.cjs.json",
     "build:declaration": "tsc src/index.ts src/hook.d.ts --declaration --skipLibCheck --allowSyntheticDefaultImports --allowJs --out dist/index.d.ts",
     "build:esm": "tsc -b ./tsconfig.esm.json",
