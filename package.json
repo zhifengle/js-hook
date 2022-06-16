@@ -4,10 +4,11 @@
   "description": "add hook to JavaScript",
   "scripts": {
     "start": "pnpm run build && pnpm run install:plugin && pnpm local-server start",
+    "start:server": "pnpm local-server start",
     "install:plugin": "pnpm --filter \"whistle.hook-server\" install:plugin",
     "build": "pnpm run build:core && pnpm run build:hook-server && pnpm run build:server",
     "build:hook-server": "pnpm hook-server build",
-    "build:core": "pnpm core build && pnpm run build:core:browser",
+    "build:core": "pnpm core build && pnpm core build:browser",
     "build:core:browser": "rollup -c build/rollup.config.browser.js",
     "build:server": "pnpm local-server build",
     "hook-server": "pnpm --filter=whistle.hook-server",

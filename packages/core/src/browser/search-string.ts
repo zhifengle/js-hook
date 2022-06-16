@@ -99,16 +99,12 @@ function search(fieldName: keyof StringDB, pattern: SearchPattern) {
 }
 
 function printResult(results: StringDB[]) {
-  let message = '\n在线程栈： \n' + globalThis.location.href + '\n';
+  let label = globalThis?.location?.href ?? '未知线程';
+  label += `\t结果: ${results.length} 条`;
   if (!results.length) {
-    message += '中没有搜索到结果。\n\n';
-    console.log(message);
-    console.log('\n\n\n');
     return;
   }
-
-  message += `中搜到${results.length}条结果： \n\n`;
-  console.log(message);
+  console.group(label);
   const colunms = [
     '变量名',
     '变量值',
@@ -131,15 +127,22 @@ function printResult(results: StringDB[]) {
       代码位置: codeInfo.codeAddress,
     };
   });
-  // 这种方式不行。url识别不了
+  const limit = 10;
+  if (results.length > limit) {
+    console.groupCollapsed('表格');
+  } else {
+    console.group('表格');
+  }
   console.table(displayResults, colunms);
-  displayResults.forEach((item, idx) => {
+  console.groupEnd();
+  displayResults.slice(0, limit).forEach((item, idx) => {
     console.log(
       `%c${idx}.%c ${item['变量名']}${blank(2)}代码位置:  ${item['代码位置']}`,
       'background: yellow; color: tomato',
       ''
     );
   });
+  console.groupEnd();
 }
 
 function blank(n: number) {
