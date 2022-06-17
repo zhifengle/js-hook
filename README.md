@@ -59,8 +59,11 @@ pnpm run start
 ### whistle 的规则参考
 
 ```conf
+# Chrome 不支持 localhost 原因未知
+# localhost hook-server://hook excludeFilter:///jquery/
 # 使用正则排除链接里面包含 jquery 的文件
-localhost hook-server://hook excludeFilter:///jquery/
+# 这里自定义的 m.com 域名。需要利用 Nginx。设置参考最下面
+m.com hook-server://hook excludeFilter:///jquery/
 
 # 统计脚本返回 404；
 https://hm.baidu.com statusCode://404
@@ -71,8 +74,23 @@ match.yuanrenxue.com hook-server://hook-js excludeFilter:///jquery/
 
 ## packages/demos
 
-用来本地测试的。运作 `npm run demos`，配置好 `whistle` 。打开 http://localhost:3000/hook-test 测试。
+用来本地测试的。运作 `npm run demos`，配置好 `whistle` 。
+打开 http://m.com:3000/hook-test 测试。
 
-> 不知道为何 Chrome 配置 SwitchyOmega。无法代理 localhost。理论上可以改成自己的 IP 测试
+> 不知道为何 Chrome 配置 SwitchyOmega。无法代理 localhost。
+> 利用的 Nginx 设置本地域名进行反向代理
 
-![firefox-test screenshot](screenshots/firefox-test.png 'firefox-test screenshot')
+
+```conf
+# Nginx 配置
+server {
+    listen       80;
+    server_name  m.com;
+    location / {
+      proxy_pass       http://localhost:3000;
+    }
+}
+```
+
+
+![chrome-test screenshot](screenshots/chrome-test.png 'chrome-test screenshot')
