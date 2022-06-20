@@ -8,7 +8,7 @@
     "install:plugin": "pnpm --filter \"whistle.hook-server\" install:plugin",
     "build": "pnpm run build:core && pnpm run build:hook-server && pnpm run build:server",
     "build:hook-server": "pnpm hook-server build",
-    "build:core": "pnpm core build && pnpm core build:browser",
+    "build:core": "pnpm core build && pnpm build:core:browser",
     "build:core:browser": "rollup -c build/rollup.config.browser.js",
     "build:server": "pnpm local-server build",
     "hook-server": "pnpm --filter=whistle.hook-server",
