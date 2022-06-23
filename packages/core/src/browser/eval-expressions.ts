@@ -1,5 +1,11 @@
 import { HOOK_FUCTION_NAME } from '../constants';
 
+let count = 1;
+
+function genSourceStr(name: string = 'dynamicScript') {
+  return `\n//# sourceURL=${name}${count++}.js`;
+}
+
 export function init() {
   hookEval();
   hookFunction();
@@ -13,7 +19,7 @@ function fetchHookStr(str: string): string {
   request.open('POST', 'http://127.0.0.1:10010/hook-js-code', false);
   request.send(str);
   if (request.status === 200) {
-    return request.responseText;
+    return request.responseText + genSourceStr();
   } else {
     return str;
   }
