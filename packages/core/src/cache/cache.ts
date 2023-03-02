@@ -6,6 +6,19 @@ const ONE_DAY = 24 * 60 * 60 * 1000;
 const REVALIDATE_INTERVAL = ONE_DAY * 7;
 // const REVALIDATE_INTERVAL = 1000 * 60;
 
+export function sanitizePath(path: string): string {
+  return path
+    .replace(/\\/g, '%5C')
+    .replace(/\//g, '%2F')
+    .replace(/:/g, '%3A')
+    .replace(/\*/g, '%2A')
+    .replace(/\?/g, '%3F')
+    .replace(/"/g, '%22')
+    .replace(/</g, '%3C')
+    .replace(/>/g, '%3E')
+    .replace(/\|/g, '%7C');
+}
+
 export function getHomePath(): string {
   const name = 'js-hook-cache';
   const homedir = os.homedir();
