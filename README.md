@@ -38,9 +38,9 @@ pnpm run start
 ```
 
 > [!IMPORTANT]  
-> 然后打开 http://127.0.0.1:8899/#rules 配置好 hook-server 规则。才能正常使用
+> 然后打开 whistle 的规则配置页面 http://127.0.0.1:8899/#rules 配置好 hook-server 规则。才能正常使用
 
-具体设置，参考下面的 [whistle 的规则参考](#whistle 的规则参考)
+具体设置，参考下面的 [whistle 的规则参考](#whistle-rules)
 
 ## packages/core
 
@@ -61,7 +61,8 @@ pnpm run start
 - `hook-no-cache`: 同 `hook`，只是没有缓存解析后的 JS 文件。
 - `hook-js-no-cache`: 同 `hook`，只是没有缓存解析后的 JS 文件。
 
-### whistle 的规则参考
+### whistle-rules
+whistle 的规则参考
 
 ```conf
 # Chrome 不支持 localhost 原因未知
