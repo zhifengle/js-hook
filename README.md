@@ -26,7 +26,7 @@ TODO
 
 ## 使用
 
-安装 [avwo/whistle](https://github.com/avwo/whistle)
+安装 [avwo/whistle](https://github.com/avwo/whistle). whistle 的配置请参考官方文档
 
 项目使用 [pnpm](https://pnpm.io/) 管理依赖。 [安装文档](https://pnpm.io/installation)
 
@@ -36,6 +36,11 @@ pnpm install
 # 同时运行 packages/server 服务
 pnpm run start
 ```
+
+> [!IMPORTANT]  
+> 然后打开 http://127.0.0.1:8899/#rules 配置好 hook-server 规则。才能正常使用
+
+具体设置，参考下面的 [whistle 的规则参考](#whistle 的规则参考)
 
 ## packages/core
 
@@ -70,6 +75,8 @@ https://hm.baidu.com statusCode://404
 # 返回 404；这些都是反调试的脚本
 /match.yuanrenxue.com\/static\/match\/safety\/.*.js/ statusCode://404
 match.yuanrenxue.com hook-server://hook-js excludeFilter:///jquery/
+# 在 cn.bing.com 上添加 hook
+cn.bing.com hook-server://hook
 ```
 
 ## packages/demos
@@ -79,7 +86,6 @@ match.yuanrenxue.com hook-server://hook-js excludeFilter:///jquery/
 
 > 不知道为何 Chrome 配置 SwitchyOmega。无法代理 localhost。
 > 利用的 Nginx 设置本地域名进行反向代理
-
 
 ```conf
 # Nginx 配置
@@ -91,6 +97,5 @@ server {
     }
 }
 ```
-
 
 ![chrome-test screenshot](screenshots/chrome-test.png 'chrome-test screenshot')
