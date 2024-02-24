@@ -83,7 +83,7 @@ cn.bing.com hook-server://hook
 ## packages/demos
 
 用来本地测试的。运作 `npm run demos`，配置好 `whistle` 。
-打开 http://m.com:3000/hook-test 测试。
+打开 http://m.com/hook-test 测试。
 
 > 不知道为何 Chrome 配置 SwitchyOmega。无法代理 localhost。
 > 利用的 Nginx 设置本地域名进行反向代理
