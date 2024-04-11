@@ -3,7 +3,7 @@ import { HOOK_FUCTION_NAME } from '../constants';
 let count = 1;
 
 function genSourceStr(name: string = 'dynamicScript') {
-  return `\n//# sourceURL=${name}${count++}.js`;
+  return `\n//# sourceURL=${location.origin}/${name}${count++}.js`;
 }
 
 export function init() {

@@ -1,10 +1,10 @@
 import {
-  inject,
   getCachedFile,
   hasValidCache,
   cacheFile,
   removeFile,
 } from '@js-hook/core';
+import { inject } from '@js-hook/ast';
 import fs from 'fs';
 import { JSDOM } from 'jsdom';
 

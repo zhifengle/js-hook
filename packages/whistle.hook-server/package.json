@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@js-hook/core": "workspace:*",
+    "@js-hook/ast": "workspace:*",
     "@types/jsdom": "^16.2.14",
     "jsdom": "^19.0.0"
   }

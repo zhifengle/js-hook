@@ -1,0 +1,13 @@
+{
+  "name": "my-first-plugin",
+  "version": "0.1.0",
+  "description": "",
+  "author": "",
+  "license": "ISC",
+  "keywords": ["swc-plugin"],
+  "main": "my_first_plugin.wasm",
+  "scripts": {
+  },
+  "files": [],
+  "preferUnplugged": true
+}

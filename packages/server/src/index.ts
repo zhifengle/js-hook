@@ -1,7 +1,7 @@
 import Koa from 'koa';
 import Router from '@koa/router';
 import koaBody from 'koa-body';
-import { inject } from '@js-hook/core';
+import { inject } from '@js-hook/ast';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
