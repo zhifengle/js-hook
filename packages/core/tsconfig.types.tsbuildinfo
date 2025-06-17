@@ -1,0 +1,1 @@
+{"root":["./src/constants.ts","./src/global.d.ts","./src/index.ts","./src/ast/inject.ts","./src/browser/eval-expressions.ts","./src/browser/hook.ts","./src/browser/index.ts","./src/browser/record-string.ts","./src/browser/search-string.ts","./src/browser/utils.ts","./src/cache/cache.ts"],"version":"5.8.3"}
