@@ -4,7 +4,9 @@ import { join } from 'path'
 export function inject(code: string, genOpt?: any): string {
   const output = transformSync(code, {
     minify: true,
+    ...genOpt,
     jsc: {
+      target: 'esnext',
       experimental: {
         plugins: [
           [
@@ -17,5 +19,5 @@ export function inject(code: string, genOpt?: any): string {
       },
     },
   });
-  return output.code;
+  return output.code
 }
