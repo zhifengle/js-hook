@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@swc/core": "^1.4.13"
+    "@swc/core": "~1.12.0"
   }
 }
