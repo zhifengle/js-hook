@@ -22,7 +22,7 @@ TODO
   - 这里指的是 eval Function, setTimeout, setInterval
   - 参考链接: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src#unsafe_eval_expressions
 - [ ] 优化速度，使用 Rust 版本的 babel: `swc`。直接使用 `@swc/core` 或者用 Rust 实现
-  - 可能会鸽。
+  - 需要使用请切换到 `dev` 分支
 - [ ] 保存 hook 数据的历史记录，对比前后两次的调用。
 
 ## 使用
